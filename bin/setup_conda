@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Download the installer
+echo "Downloading installer..."
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+# Make the installer executable
+echo "Configuring installer..."
+chmod 755 Miniconda3-latest-Linux-x86_64.sh
+
+# Run the installer in batch mode
+echo "Running installer..."
+./Miniconda3-latest-Linux-x86_64.sh -b -f -u
+
+# Override PYTHONPATH
+echo "Configuring Bash profile..."
+printf 'PYTHONPATH=""\n' >> ~/.bash_profile
+
+# Configure conda for bash
+source ~/miniconda3/etc/profile.d/conda.sh
+conda init bash
+
+python <<EOF
+import os
+
+bashrc_file = os.path.join(os.environ['HOME'], '.bashrc')
+bash_profile = os.path.join(os.environ['HOME'], '.bash_profile')
+
+bashrc = []
+with open(bashrc_file, "r") as fp:
+    for line in fp:
+        bashrc.append(line)
+
+hook_code = []
+hook = False
+with open(bashrc_file, "w") as fp:
+    for line in bashrc:
+        if '>>>' in line:
+            hook = True
+        if '<<<' in line:
+            hook_code.append(line)
+            hook = False
+            continue
+        if hook is True:
+            hook_code.append(line)
+        else:
+            fp.write(line)
+
+with open(bash_profile, "a") as fp:
+    fp.write("\n")
+    for line in hook_code:
+        fp.write(line)
+EOF
+
+# Cleanup install file
+rm Miniconda3-latest-Linux-x86_64.sh
+
+# Update conda
+conda update -y -n base conda
+
+# Configure the Mamba solver
+#conda install -y -n base conda-libmamba-solver
+#conda config --set solver libmamba
+
+# Finish
+echo "Finished. Log in again for changes to take affect."
