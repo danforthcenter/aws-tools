@@ -38,6 +38,12 @@ def main():
         fp.write("## END PBS SETTINGS\n")
         fp.write("## BEGIN JOB\n\n")
         fp.write("## END JOB\n")
+    
+    docs = "https://awslabs.github.io/scale-out-computing-on-aws/tutorials/integration-ec2-job-parameters/"
+    print(f"Created job file {args.filename}.")
+    print("Edit the job file to add/edit parameters and job information.")
+    print("Submit the job using the command: qsub <jobfile>, or for interactive jobs: qsub -I <jobfile>")
+    print(f"Additional parameters are documented at {docs}")
 
 
 if __name__ == '__main__':
