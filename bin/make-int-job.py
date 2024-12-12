@@ -7,7 +7,7 @@ import os, grp
 def options():
     parser = argparse.ArgumentParser(description="Submit an interactive SOCA job.")
     parser.add_argument("-f", "--filename", help="Filename and path to output jobfile.", default = 'intjob.sh')
-    parser.add_argument("-n", "--name", help="Name of the job.", default="collint")
+    parser.add_argument("-n", "--name", help="Name of the job.", default="interactive")
     parser.add_argument("-t", "--type", help="Type of instance.", default="m5.large")
     parser.add_argument("-d", "--scratch", help="Scratch space (GB).", default=10)
     parser.add_argument("-s", "--spot", action="store_true", help="Use spot instances.")
