@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Written by Micah Kelleher
+
+help() {
+    echo "Usage: ssh-to-job [job ID number]"
+    echo "Connect to the compute node running a job."
+    echo "The job ID number must be provided by the user."
+}
+
+# Get the options
+while getopts ":h" opt; do
+    case ${opt} in
+        h )
+            help
+            exit 0
+            ;;
+        \? )
+            echo "Invalid option: $OPTARG" 1>&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# Get the job ID number
+input=$1
+
+# Extract the part before the first period from the hostname and prepend "ip-"
+host_ip=$(hostname | cut -d'.' -f1)
+
+# Append .{host_ip} to the job id number
+input="${input}.${host_ip}"
+
+# Retrieve the compute node's IP address and SSH into it
+output=$(qstat -f "$input" | grep exec_host | awk '{print $3}' | cut -d'/' -f1)
+
+echo "Connecting via SSH to $output..."
+
+ssh "$output"
