@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+import boto3
+import argparse
+from urllib.parse import urlparse
+
+
+def options():
+    parser = argparse.ArgumentParser(description="Print the number of files and how many are archived in an S3 bucket")
+    parser.add_argument("--profile", help="AWS active authentication profile", required=True)
+    parser.add_argument("--prefix", help="AWS S3 bucket path prefix", required=True)
+    args = parser.parse_args()
+
+    parsed_uri = urlparse(args.prefix)
+
+    args.bucket = parsed_uri.netloc
+    args.key = parsed_uri.path.lstrip('/')
+
+    return args
+
+
+def main():
+    args = options()
+    # Use the default profile in the AWS CLI configuration file
+    boto3.setup_default_session(profile_name=args.profile)
+    # Create an S3 client
+    s3 = boto3.client('s3')
+    # Create a paginator to list objects in the bucket
+    paginator = s3.get_paginator('list_objects_v2')
+    # List objects in the bucket using the paginator
+    pages = paginator.paginate(Bucket=args.bucket, Prefix=args.key)
+
+    # Stats
+    obj_count = 0
+    archived_count = 0
+    
+    # Iterate over the pages
+    for page in pages:
+        # Add the number of objects in the page to the total count
+        obj_count += len(page['Contents'])
+        # Iterate over the objects in the page
+        for obj in page['Contents']:
+            # If the object is stored using the INTELLIGENT_TIERING storage class it can be archived
+            if obj['StorageClass'] == 'INTELLIGENT_TIERING':
+                # Get the object's metadata
+                head = s3.head_object(Bucket=args.bucket, Key=obj['Key'])
+                # Check if the object is archived
+                status = head.get("ArchiveStatus")
+                if "ARCHIVE" in status:
+                    # Increment the count of archived objects
+                    archived_count += 1
+    print(f"Total objects: {obj_count}")
+    print(f"Archived objects: {archived_count}")
+
+if __name__ == '__main__':
+    main()
