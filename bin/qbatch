@@ -13,7 +13,7 @@ def options():
     """
     parser = argparse.ArgumentParser(description='Batch job submission')
     parser.add_argument("-i", "--inputs", help="Tab-delimited file of input parameters.", required=True)
-    parser.add_arguments("-s", "--script", help="PBS job script file.", required=True)
+    parser.add_argument("-s", "--script", help="PBS job script file.", required=True)
     return parser.parse_args()
 
 
