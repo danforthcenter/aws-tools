@@ -1,0 +1,42 @@
+#!/usr/env python
+import argparse
+import subprocess
+
+
+def options():
+    """Command line argument parser.
+
+    Returns
+    -------
+    argparse.Namespace
+        argparse.Namespace object containing the parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description='Batch job submission')
+    parser.add_argument("-i", "--inputs", help="Tab-delimited file of input parameters.", required=True)
+    parser.add_arguments("-s", "--script", help="PBS job script file.", required=True)
+    return parser.parse_args()
+
+
+def main():
+    """Main function."""
+    # Parse command line arguments
+    args = options()
+
+    # Read input parameters
+    with open(args.inputs, 'r') as f:
+        # Read the first line to get the column headers
+        header = f.readline().strip().split('\t')
+        # Iterate over the remaining lines
+        for line in f:
+            # Parse the line into a list
+            values = line.strip().split('\t')
+            # Zip the header and values into a dictionary
+            params = dict(zip(header, values))
+            # Create a list of key-value pairs
+            param_list = [f"{k}={v}" for k, v in params.items()]
+            # Submit the job
+            subprocess.run(["qsub", "-v", ",".join(map(str, param_list)), args.script])
+
+
+if __name__ == '__main__':
+    main()
