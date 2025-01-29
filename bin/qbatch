@@ -30,13 +30,14 @@ def main():
         for i, line in enumerate(f):
             # Parse the line into a list
             values = line.strip().split('\t')
-            # Zip the header and values into a dictionary
-            params = dict(zip(header, values))
-            # Create a list of key-value pairs
-            param_list = [f"{k}={v}" for k, v in params.items()]
-            # Submit the job
-            subprocess.run(["qsub", "-V", "-j", "oe", "-o", f"{args.script}.{i}.qlog",
-                            "-v", ",".join(map(str, param_list)), args.script])
+            if len(values) == len(header):
+                # Zip the header and values into a dictionary
+                params = dict(zip(header, values))
+                # Create a list of key-value pairs
+                param_list = [f"{k}={v}" for k, v in params.items()]
+                # Submit the job
+                subprocess.run(["qsub", "-V", "-j", "oe", "-o", f"{args.script}.{i}.qlog",
+                                "-v", ",".join(map(str, param_list)), args.script])
 
 
 if __name__ == '__main__':
