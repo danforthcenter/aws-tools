@@ -2,22 +2,22 @@
 
 # Download the installer
 echo "Downloading installer..."
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
 
 # Make the installer executable
 echo "Configuring installer..."
-chmod 755 Miniconda3-latest-Linux-x86_64.sh
+chmod 755 Miniforge3-Linux-x86_64.sh
 
 # Run the installer in batch mode
 echo "Running installer..."
-./Miniconda3-latest-Linux-x86_64.sh -b -f -u
+./Miniforge3-Linux-x86_64.sh -b -f -u
 
 # Override PYTHONPATH
 echo "Configuring Bash profile..."
-printf 'PYTHONPATH=""\n' >> ~/.bash_profile
+printf 'export PYTHONPATH=""\n' >> ~/.bash_profile
 
 # Configure conda for bash
-source ~/miniconda3/etc/profile.d/conda.sh
+source ~/miniforge3/etc/profile.d/conda.sh
 conda init bash
 
 python <<EOF
@@ -53,14 +53,10 @@ with open(bash_profile, "a") as fp:
 EOF
 
 # Cleanup install file
-rm Miniconda3-latest-Linux-x86_64.sh
+rm Miniforge3-Linux-x86_64.sh
 
 # Update conda
 conda update -y -n base conda
-
-# Configure the Mamba solver
-#conda install -y -n base conda-libmamba-solver
-#conda config --set solver libmamba
 
 # Finish
 echo "Finished. Log in again for changes to take affect."
