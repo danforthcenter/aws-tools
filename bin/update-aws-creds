@@ -13,6 +13,9 @@ new_creds=$(cat)
 # Extract the last three lines of credentials and replace first line with [default]
 new_creds=$(echo -e "[default]\n$(echo "$new_creds" | tail -n 3)")
 
+# Ensure the directory exists
+mkdir -p ~/.aws
+
 # Overwrite ~/.aws/credentials
 echo "$new_creds" > ~/.aws/credentials
 
