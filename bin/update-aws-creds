@@ -4,6 +4,35 @@
 
 # To get creds visit your AWS SSO Access Panel, select Access keys, and copy Option 2: Add a profile to your AWS credentials file.
 
+help() {
+    echo "Usage: aws-creds"
+    echo
+    echo "This script updates your AWS credentials using values copied from the AWS SSO Access Panel."
+    echo
+    echo "Instructions:"
+    echo "  1. Visit your AWS SSO Access Panel"
+    echo "  2. Select 'Access keys'"
+    echo "  3. Copy 'Option 2: Add a profile to your AWS credentials file'"
+    echo "  4. Run this script and paste the credentials when prompted"
+    echo
+    echo "Note: These credentials are valid for 12 hours."
+}
+
+# Get the options
+while getopts ":h" opt; do
+    case ${opt} in
+        h )
+            help
+            exit 0
+            ;;
+        \? )
+            echo "Invalid option: $OPTARG" 1>&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
 # Prompt user to paste the new credentials copied from AWS Access Panel
 echo "Paste credentials, press Enter, then Ctrl+D to finish:"
 
