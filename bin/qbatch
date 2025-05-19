@@ -15,7 +15,7 @@ def options():
     parser = argparse.ArgumentParser(description='Batch job submission')
     parser.add_argument("-i", "--inputs", help="Tab-delimited file of input parameters.", required=True)
     parser.add_argument("-s", "--script", help="PBS job script file.", required=True)
-    parser.add_argument("-l", "--log", help="Log file directory.", required=False, default=".")
+    parser.add_argument("-l", "--log", help="Log file directory.", required=False)
     return parser.parse_args()
 
 
@@ -37,9 +37,12 @@ def main():
                 params = dict(zip(header, values))
                 # Create a list of key-value pairs
                 param_list = [f"{k}={v}" for k, v in params.items()]
+                log = []
+                if args.log:
+                    # Create a list of log options
+                    log = ["-j", "oe", "-o", os.path.join(args.log, f"{args.script}.{i}.qlog")]
                 # Submit the job
-                subprocess.run(["qsub", "-V", "-j", "oe", "-o", os.path.join(args.log, f"{args.script}.{i}.qlog"),
-                                "-v", ",".join(map(str, param_list)), args.script])
+                subprocess.run(["qsub", "-V"] + log + ["-v", ",".join(map(str, param_list)), args.script])
 
 
 if __name__ == '__main__':
