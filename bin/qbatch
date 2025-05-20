@@ -42,7 +42,7 @@ def main():
                     # Create a list of log options
                     log = ["-j", "oe", "-o", os.path.join(args.log, f"{args.script}.{i}.qlog")]
                 # Submit the job
-                subprocess.run(["qsub", "-V"] + log + ["-v", ",".join(map(str, param_list)), args.script])
+                subprocess.run(["qsub"] + log + ["-v", ",".join(map(str, param_list)), args.script])
 
 
 if __name__ == '__main__':
