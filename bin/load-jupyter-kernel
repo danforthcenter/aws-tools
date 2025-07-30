@@ -1,0 +1,37 @@
+#! /usr/bin/env python
+import os
+import argparse
+import subprocess
+
+
+def options():
+    """Command line argument parser.
+
+    Returns
+    -------
+    argparse.Namespace
+        argparse.Namespace object containing the parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description='Load Jupyter kernel')
+    parser.add_argument("-k", "--kernel", help="Jupyter kernel name in /apps/miniforge3/envs.", required=True)
+    return parser.parse_args()
+
+
+def main():
+    """Main function."""
+    # Parse command line arguments
+    args = options()
+
+    # Construct the path to the kernel
+    kernel_path = os.path.join("/apps/miniforge3/envs", args.kernel)
+
+    # Activate the conda environment
+    subprocess.run(["bash", "/apps/miniforge3/etc/profile.d/conda.sh", "&&", "conda", "activate", kernel_path], check=True)
+
+    # Use ipykernel to install the kernel
+    subprocess.run(["python", "-m", "ipykernel", "install", "--user", f"--name={args.kernel}",
+                    f"--display-name=Python ({args.kernel})"], check=True)
+
+
+if __name__ == '__main__':
+    main()
