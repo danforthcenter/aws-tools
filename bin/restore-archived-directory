@@ -1,0 +1,42 @@
+#!/bin/bash
+
+help() {
+    echo "Usage: restore-archived-directory [-d s3directory] [-b bucket]"
+    echo 
+    echo "Change archive status recursively for an entire directory on S3."
+    echo
+    echo "-d:"
+    echo "      S3 URI to directory that needs to be changed"
+    echo 
+    echo "-b:"
+    echo "      Name of bucket where directory is stored"
+    echo
+}
+
+# Get the options
+while getopts "hd:b:" OPTION; do
+    case $OPTION in
+        h)
+            help
+            exit 0
+            ;;
+        d)
+            s3dir=$OPTARG
+            ;;
+        b)
+            s3bucket=$OPTARG
+            ;;
+        ?)
+            echo "Invalid option: $OPTARG" 1>&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+aws s3 ls --recursive $s3dir | \
+awk '{print $4}' | \
+xargs -L 1 aws s3api restore-object \
+--bucket $s3bucket \
+--restore-request '{}' \
+--key
