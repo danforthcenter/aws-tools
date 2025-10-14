@@ -4,6 +4,9 @@ help() {
     echo "Usage: restore-archived-directory [-d s3directory] [-b bucket]"
     echo 
     echo "Change archive status recursively for an entire directory on S3."
+    echo    "~~~~ NOTE ~~~~"
+    echo    "Can take a considerable amount of time if unarchiving many objects (1000's)."
+    echo    "Consider using S3 batch processing tools if attempting this on many objects."
     echo
     echo "-d:"
     echo "      S3 URI to directory that needs to be changed"
