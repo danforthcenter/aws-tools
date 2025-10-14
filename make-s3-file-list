@@ -1,0 +1,46 @@
+#!/bin/bash
+
+help() {
+    echo "Usage: make-s3-file-list [-d s3directory] [-b bucket] [-n filename]"
+    echo 
+    echo "List all files in an S3 directory and subdirectories and store in csv."
+    echo    "for use in changing archive status via the S3 batch processing tools."
+    echo 
+    echo "-d:"
+    echo "      S3 URI of directory to list"
+    echo 
+    echo "-b:"
+    echo "      Name of bucket where directory is stored"
+    echo
+    echo "-n:"
+    echo "      Name of csv to output without .csv extension"
+    echo
+}
+
+# Get the options
+while getopts "hd:b:n:" OPTION; do
+    case $OPTION in
+        h)
+            help
+            exit 0
+            ;;
+        d)
+            s3dir=$OPTARG
+            ;;
+        b)
+            s3bucket=$OPTARG
+            ;;
+        n) 
+            filename=$OPTARG
+            ;;
+        ?)
+            echo "Invalid option: $OPTARG" 1>&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+aws s3 ls --recursive $s3dir | \
+awk '{print "'$s3bucket',"$4}' > \
+"$filename.csv"
