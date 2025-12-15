@@ -35,12 +35,18 @@ def main():
             if len(values) == len(header):
                 # Zip the header and values into a dictionary
                 params = dict(zip(header, values))
+                # Set log_id
+                log_id = i
+                # If the "id" column exists, use it as log_id and remove it from params
+                if "id" in params:
+                    log_id = params["id"]
+                    params.pop("id")
                 # Create a list of key-value pairs
                 param_list = [f"{k}={v}" for k, v in params.items()]
                 log = []
                 if args.log:
                     # Create a list of log options
-                    log = ["-j", "oe", "-o", os.path.join(args.log, f"{args.script}.{i}.qlog")]
+                    log = ["-j", "oe", "-o", os.path.join(args.log, f"{log_id}.qlog")]
                 # Submit the job
                 subprocess.run(["qsub"] + log + ["-v", ",".join(map(str, param_list)), args.script])
 
